@@ -151,6 +151,62 @@
       outline: 2px solid #fff;
     }
 
+    .history-container {
+      max-width: 450px;
+      margin: 0 auto;
+      padding: 10px;
+    }
+
+    .history-card {
+      background: #222;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 255, 204, 0.3);
+      padding: 16px 20px;
+      margin-bottom: 14px;
+      color: #00ffcc;
+      font-size: 18px;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .history-time {
+      display: block;
+      font-size: 14px;
+      color: #66fff0cc;
+      margin-top: 6px;
+      font-weight: 400;
+    }
+
+    #restart-btn {
+      margin-top: 24px;
+      padding: 12px 28px;
+      font-size: 20px;
+      background-color: #00ffcc;
+      border: none;
+      border-radius: 10px;
+      color: #121212;
+      cursor: pointer;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 0 15px #00ffccaa;
+      transition: background-color 0.3s ease;
+    }
+
+    #restart-btn:hover {
+      background-color: #00cca6;
+    }
+
+
     @media (max-width: 500px) {
       :root {
         --digit-height: 60px;
@@ -428,15 +484,72 @@
     }
   }
 
-  nextBtn.addEventListener('click', () => {
-    questionCount++;
-    if (questionCount >= 8) {
-      alert('Selesai! Semua soal telah dijawab.');
+  function showHistoryPage() {
+    slotContainer.innerHTML = '';
+    inputLine.style.display = 'none';
+    nextBtn.style.display = 'none';
+    timerEl.style.display = 'none';
+    underline.style.minWidth = 'auto';
+    symbolEl.textContent = '';
+
+    const historyTitle = document.createElement('h2');
+    historyTitle.textContent = 'Riwayat Latihan';
+    historyTitle.style.color = '#00ffcc';
+    historyTitle.style.textAlign = 'center';
+    historyTitle.style.marginBottom = '20px';
+    slotContainer.appendChild(historyTitle);
+
+    const container = document.createElement('div');
+    container.className = 'history-container';
+
+    if (history.length === 0) {
+      const emptyMsg = document.createElement('p');
+      emptyMsg.textContent = 'Belum ada riwayat latihan.';
+      emptyMsg.style.textAlign = 'center';
+      emptyMsg.style.color = '#aaa';
+      container.appendChild(emptyMsg);
+    } else {
+      history.forEach((q, idx) => {
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        card.style.animationDelay = `${idx * 0.1}s`;
+
+        const questionText = document.createElement('div');
+        questionText.textContent = `${q.a} ${q.operator} ${q.b} = ${q.answer}`;
+        card.appendChild(questionText);
+
+        const timeText = document.createElement('span');
+        timeText.className = 'history-time';
+        timeText.textContent = `Waktu: ${q.time}`;
+        card.appendChild(timeText);
+
+        container.appendChild(card);
+      });
+    }
+
+    slotContainer.appendChild(container);
+
+    const restartBtn = document.createElement('button');
+    restartBtn.id = 'restart-btn';
+    restartBtn.textContent = 'Mulai Lagi';
+
+    restartBtn.addEventListener('click', () => {
       questionCount = 0;
       history = [];
       localStorage.removeItem('mathHistory');
+      showAllRows();
+    });
+
+    slotContainer.appendChild(restartBtn);
+  }
+
+  nextBtn.addEventListener('click', () => {
+    questionCount++;
+    if (questionCount >= 8) {
+      showHistoryPage();
+    } else {
+      showAllRows();
     }
-    showAllRows();
   });
 
   showAllRows();
