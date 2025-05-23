@@ -570,6 +570,13 @@ async function showStoryQuestion2(bendaPilihan) {
 
           if (allInputsFilled) {
             stopTimer();
+
+            const finishTime = timerEl.textContent;
+            let currentQuestionStoryData = { a: angka_1, b: angka_2, operator: "+", answer: jawaban, time: finishTime };
+            history.push(currentQuestionStoryData);
+            localStorage.setItem("mathHistory", JSON.stringify(history));
+
+            showHistoryPage();
           }
         }
       } else if (this.value.length > 0) {
@@ -770,6 +777,11 @@ async function showStoryQuestion1() {
 
             if (allInputsFilled) {
               stopTimer();
+
+              const finishTime = timerEl.textContent;
+              let currentQuestionStoryData = { a: angka_1, b: angka_2, operator: "+", answer: jawaban, time: finishTime };
+              history.push(currentQuestionStoryData);
+              localStorage.setItem("mathHistory", JSON.stringify(history));
 
               showStory2Btn.style.display = "inline-block";
               showStory2Btn.focus();
