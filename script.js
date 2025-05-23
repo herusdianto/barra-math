@@ -372,6 +372,24 @@ const benda = [
 
 let storyStep = 0; // untuk mengatur soal cerita 1 dan 2
 
+function createEmptyDigitInputs() {
+  const input = document.createElement("input");
+  input.type = "number";
+  input.min = 0;
+  input.max = 9;
+  input.style.width = "40px";
+  input.style.height = "60px";
+  input.style.fontSize = "32px";
+  input.style.textAlign = "center";
+  input.style.background = "transparent";
+  input.style.border = "none";
+  input.style.borderRadius = "0px";
+  input.style.color = "#fff";
+  input.inputMode = "numeric";
+  input.disabled = true;
+  return input;
+}
+
 function createDigitInputs(number) {
   return splitDigits(number).map(() => {
     const input = document.createElement("input");
@@ -416,12 +434,22 @@ async function showStoryQuestion2(bendaPilihan) {
   inputWrapper.style.gap = "6px";
   inputWrapper.style.marginTop = "32px"; // spacing antar soal
 
+  let digitsAngka1 = splitDigits(angka_1);
+  let digitsAngka2 = splitDigits(angka_2);
+  let digitsAnswer = splitDigits(jawaban);
+
+  let prependAngka1 = (digitsAnswer.length > digitsAngka1.length);
+  let prependAngka2 = (digitsAnswer.length > digitsAngka2.length);
+
   // Baris angka pertama
   const row1 = document.createElement("div");
   row1.style.display = "flex";
   row1.style.justifyContent = "center";
   row1.style.gap = "8px";
   const num1Inputs = createDigitInputs(angka_1);
+  if (prependAngka1) {
+    row1.appendChild(createEmptyDigitInputs())
+  }
   num1Inputs.forEach((i) => row1.appendChild(i));
   inputWrapper.appendChild(row1);
 
@@ -431,6 +459,9 @@ async function showStoryQuestion2(bendaPilihan) {
   row2.style.justifyContent = "center";
   row2.style.gap = "8px";
   const num2Inputs = createDigitInputs(angka_2);
+  if (prependAngka2) {
+    row2.appendChild(createEmptyDigitInputs())
+  }
   num2Inputs.forEach((i) => row2.appendChild(i));
   inputWrapper.appendChild(row2);
 
@@ -604,6 +635,15 @@ async function showStoryQuestion1() {
     p2.textContent = `Berapa jumlah ${bendaPilihan} milik ${namaPilihan[0]} dan ${namaPilihan[1]}?`;
     slotContainer.appendChild(p2);
 
+    const jawaban = currentQuestionData.answers[0]; 
+  
+    let digitsAngka1 = splitDigits(angka_1);
+    let digitsAngka2 = splitDigits(angka_2);
+    let digitsAnswer = splitDigits(jawaban);
+
+    let prependAngka1 = (digitsAnswer.length > digitsAngka1.length);
+    let prependAngka2 = (digitsAnswer.length > digitsAngka2.length);
+
     const inputWrapper = document.createElement("div");
     inputWrapper.style.display = "flex";
     inputWrapper.style.flexDirection = "column";
@@ -617,6 +657,9 @@ async function showStoryQuestion1() {
     row1.style.justifyContent = "center";
     row1.style.gap = "8px";
     const num1Inputs = createDigitInputs(angka_1);
+    if (prependAngka1) {
+      row1.appendChild(createEmptyDigitInputs())
+    }
     num1Inputs.forEach((i) => row1.appendChild(i));
     inputWrapper.appendChild(row1);
 
@@ -626,6 +669,9 @@ async function showStoryQuestion1() {
     row2.style.justifyContent = "center";
     row2.style.gap = "8px";
     const num2Inputs = createDigitInputs(angka_2);
+    if (prependAngka2) {
+      row2.appendChild(createEmptyDigitInputs())
+    }
     num2Inputs.forEach((i) => row2.appendChild(i));
     inputWrapper.appendChild(row2);
 
