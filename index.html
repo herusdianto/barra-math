@@ -152,23 +152,77 @@
     }
 
     .history-container {
-      max-width: 450px;
+      max-width: 500px;
       margin: 0 auto;
-      padding: 10px;
+      padding: 20px 10px;
+      position: relative;
+    }
+
+    .timeline-line {
+      position: absolute;
+      top: 0;
+      left: 30px;
+      width: 4px;
+      height: 100%;
+      background: #00ffcc;
+      opacity: 0.3;
+      border-radius: 2px;
+      z-index: 0;
     }
 
     .history-card {
+      position: relative;
       background: #222;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 255, 204, 0.3);
       padding: 16px 20px;
-      margin-bottom: 14px;
+      margin-left: 70px;
+      margin-bottom: 20px;
       color: #00ffcc;
       font-size: 18px;
       font-weight: 600;
       opacity: 0;
       transform: translateY(20px);
       animation: fadeInUp 0.5s forwards;
+      z-index: 1;
+    }
+
+    #buttons-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #restart-btn, #clear-history-btn {
+      width: 180px;
+      padding: 12px 0;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: block;
+      margin: 10px auto;
+      user-select: none;
+      box-shadow: 0 0 15px #00ffccaa;
+      transition: background-color 0.3s ease;
+    }
+
+    #restart-btn {
+      background-color: #00ffcc;
+      color: #121212;
+    }
+
+    #restart-btn:hover {
+      background-color: #00cca6;
+    }
+
+    #clear-history-btn {
+      background-color: #cc3300;
+      color: #fff;
+      box-shadow: 0 0 15px #cc3300aa;
+    }
+
+    #clear-history-btn:hover {
+      background-color: #b22a00;
     }
 
     @keyframes fadeInUp {
@@ -177,35 +231,6 @@
         transform: translateY(0);
       }
     }
-
-    .history-time {
-      display: block;
-      font-size: 14px;
-      color: #66fff0cc;
-      margin-top: 6px;
-      font-weight: 400;
-    }
-
-    #restart-btn {
-      margin-top: 24px;
-      padding: 12px 28px;
-      font-size: 20px;
-      background-color: #00ffcc;
-      border: none;
-      border-radius: 10px;
-      color: #121212;
-      cursor: pointer;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      box-shadow: 0 0 15px #00ffccaa;
-      transition: background-color 0.3s ease;
-    }
-
-    #restart-btn:hover {
-      background-color: #00cca6;
-    }
-
 
     @media (max-width: 500px) {
       :root {
@@ -485,6 +510,13 @@
   }
 
   function showHistoryPage() {
+    if (history.length === 0) {
+      // Kalau kosong langsung tampil halaman soal awal
+      showAllRows();
+      return;
+    }
+
+    // kalau ada riwayat, tampilkan halaman riwayat
     slotContainer.innerHTML = '';
     inputLine.style.display = 'none';
     nextBtn.style.display = 'none';
@@ -502,32 +534,37 @@
     const container = document.createElement('div');
     container.className = 'history-container';
 
-    if (history.length === 0) {
-      const emptyMsg = document.createElement('p');
-      emptyMsg.textContent = 'Belum ada riwayat latihan.';
-      emptyMsg.style.textAlign = 'center';
-      emptyMsg.style.color = '#aaa';
-      container.appendChild(emptyMsg);
-    } else {
-      history.forEach((q, idx) => {
-        const card = document.createElement('div');
-        card.className = 'history-card';
-        card.style.animationDelay = `${idx * 0.1}s`;
+    // Garis timeline vertikal
+    const timelineLine = document.createElement('div');
+    timelineLine.className = 'timeline-line';
+    container.appendChild(timelineLine);
 
-        const questionText = document.createElement('div');
-        questionText.textContent = `${q.a} ${q.operator} ${q.b} = ${q.answer}`;
-        card.appendChild(questionText);
+    history.forEach((q, idx) => {
+      const card = document.createElement('div');
+      card.className = 'history-card';
+      card.style.animationDelay = `${idx * 0.1}s`;
 
-        const timeText = document.createElement('span');
-        timeText.className = 'history-time';
-        timeText.textContent = `Waktu: ${q.time}`;
-        card.appendChild(timeText);
+      const questionText = document.createElement('div');
+      questionText.textContent = `${q.a} ${q.operator} ${q.b} = ${q.answer}`;
+      card.appendChild(questionText);
 
-        container.appendChild(card);
-      });
-    }
+      const timeText = document.createElement('span');
+      timeText.className = 'history-time';
+      timeText.textContent = `Waktu: ${q.time}`;
+      card.appendChild(timeText);
+
+      const dot = document.createElement('div');
+      dot.className = 'timeline-dot';
+      dot.style.top = `calc(${idx * (card.offsetHeight + 20) + 24}px)`;
+
+      container.appendChild(card);
+      container.appendChild(dot);
+    });
 
     slotContainer.appendChild(container);
+
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.id = 'buttons-container';
 
     const restartBtn = document.createElement('button');
     restartBtn.id = 'restart-btn';
@@ -535,17 +572,31 @@
 
     restartBtn.addEventListener('click', () => {
       questionCount = 0;
-      history = [];
-      localStorage.removeItem('mathHistory');
       showAllRows();
     });
 
-    slotContainer.appendChild(restartBtn);
+    const clearHistoryBtn = document.createElement('button');
+    clearHistoryBtn.id = 'clear-history-btn';
+    clearHistoryBtn.textContent = 'Hapus Riwayat';
+
+    clearHistoryBtn.addEventListener('click', () => {
+      if (confirm('Yakin ingin menghapus semua riwayat?')) {
+        history = [];
+        questionCount = 0;
+        localStorage.removeItem('mathHistory');
+        showAllRows();  // setelah hapus riwayat langsung ke halaman soal awal
+      }
+    });
+
+    buttonsContainer.appendChild(restartBtn);
+    buttonsContainer.appendChild(clearHistoryBtn);
+
+    slotContainer.appendChild(buttonsContainer);
   }
 
   nextBtn.addEventListener('click', () => {
     questionCount++;
-    if (questionCount >= 8) {
+    if (questionCount >= 2) {
       showHistoryPage();
     } else {
       showAllRows();
