@@ -85,7 +85,7 @@ async function showSlotRow(digits, maxLength) {
   });
 }
 
-async function showAllRows() {
+async function showMathQuestions() {
   slotContainer.innerHTML = "";
   inputLine.innerHTML = "";
   inputLine.style.display = "none";
@@ -226,7 +226,7 @@ function stopTimer() {
 function showHistoryPage() {
   if (history.length === 0) {
     // Kalau kosong langsung tampil halaman soal awal
-    showAllRows();
+    showMathQuestions();
     return;
   }
 
@@ -286,7 +286,7 @@ function showHistoryPage() {
 
   restartBtn.addEventListener("click", () => {
     questionCount = 0;
-    showAllRows();
+    showMathQuestions();
   });
 
   const clearHistoryBtn = document.createElement("button");
@@ -298,7 +298,7 @@ function showHistoryPage() {
       history = [];
       questionCount = 0;
       localStorage.removeItem("mathHistory");
-      showAllRows(); // setelah hapus riwayat langsung ke halaman soal awal
+      showMathQuestions(); // setelah hapus riwayat langsung ke halaman soal awal
     }
   });
 
@@ -405,8 +405,8 @@ async function showStoryQuestion2(bendaPilihan) {
   p1.textContent = `Berapa jumlah ${bendaPilihan} seluruhnya?`;
   secondQuestionContainer.appendChild(p1);
 
-  const jml1 = answers[0]; // hasil penjumlahan pertama
-  const jml2 = jumlah[2]; // angka baru untuk ditambah
+  const angka_1 = answers[0]; // hasil penjumlahan pertama
+  const angka_2 = jumlah[2]; // angka baru untuk ditambah
   const jawaban = answers[1]; // hasil akhir
 
   const inputWrapper = document.createElement("div");
@@ -421,7 +421,7 @@ async function showStoryQuestion2(bendaPilihan) {
   row1.style.display = "flex";
   row1.style.justifyContent = "center";
   row1.style.gap = "8px";
-  const num1Inputs = createDigitInputs(jml1);
+  const num1Inputs = createDigitInputs(angka_1);
   num1Inputs.forEach((i) => row1.appendChild(i));
   inputWrapper.appendChild(row1);
 
@@ -430,7 +430,7 @@ async function showStoryQuestion2(bendaPilihan) {
   row2.style.display = "flex";
   row2.style.justifyContent = "center";
   row2.style.gap = "8px";
-  const num2Inputs = createDigitInputs(jml2);
+  const num2Inputs = createDigitInputs(angka_2);
   num2Inputs.forEach((i) => row2.appendChild(i));
   inputWrapper.appendChild(row2);
 
@@ -461,7 +461,7 @@ async function showStoryQuestion2(bendaPilihan) {
   row3.style.display = "flex";
   row3.style.justifyContent = "center";
   row3.style.gap = "8px";
-  const answerInputs = createDigitInputs(jml1 + jml2);
+  const answerInputs = createDigitInputs(angka_1 + angka_2);
   answerInputs.forEach((i) => row3.appendChild(i));
   inputWrapper.appendChild(row3);
 
@@ -473,17 +473,17 @@ async function showStoryQuestion2(bendaPilihan) {
     const userNum1 = parseInt(
       num1Inputs.map((i) => i.value).join("")
     );
-    if (isNaN(userNum1) || userNum1 !== jml1) return false;
+    if (isNaN(userNum1) || userNum1 !== angka_1) return false;
 
     const userNum2 = parseInt(
       num2Inputs.map((i) => i.value).join("")
     );
-    if (isNaN(userNum2) || userNum2 !== jml2) return false;
+    if (isNaN(userNum2) || userNum2 !== angka_2) return false;
 
     const userAnswer = parseInt(
       answerInputs.map((i) => i.value).join("")
     );
-    if (isNaN(userAnswer) || userAnswer !== jml1 + jml2)
+    if (isNaN(userAnswer) || userAnswer !== angka_1 + angka_2)
       return false;
 
     return true;
@@ -501,12 +501,12 @@ async function showStoryQuestion2(bendaPilihan) {
     input.addEventListener("input", function () {
       let expectedDigit;
       if (idx < num1Inputs.length) {
-        expectedDigit = splitDigits(jml1)[idx];
+        expectedDigit = splitDigits(angka_1)[idx];
       } else if (idx < num1Inputs.length + num2Inputs.length) {
         expectedDigit =
-          splitDigits(jml2)[idx - num1Inputs.length];
+          splitDigits(angka_2)[idx - num1Inputs.length];
       } else {
-        expectedDigit = splitDigits(jml1 + jml2)[
+        expectedDigit = splitDigits(angka_1 + angka_2)[
           idx - num1Inputs.length - num2Inputs.length
         ];
       }
@@ -555,7 +555,7 @@ async function showStoryQuestion2(bendaPilihan) {
   allInputs[0].focus();
 }
 
-async function showStoryQuestion() {
+async function showStoryQuestion1() {
   slotContainer.innerHTML = "";
   inputLine.innerHTML = "";
   inputLine.style.display = "flex";
@@ -571,17 +571,17 @@ async function showStoryQuestion() {
     if (!namaPilihan.includes(n)) namaPilihan.push(n);
   }
   const bendaPilihan = benda[Math.floor(Math.random() * benda.length)];
-  const jml1 = getRandomNumber(10, 99);
-  const jml2 = getRandomNumber(10, 99);
-  const jml3 = getRandomNumber(10, 99);
+  const angka_1 = getRandomNumber(10, 99);
+  const angka_2 = getRandomNumber(10, 99);
+  const angka_3 = getRandomNumber(10, 99);
 
   // Simpan data untuk soal kedua nanti
   currentQuestionData = {
     type: "story",
     nama: namaPilihan,
     benda: bendaPilihan,
-    jumlah: [jml1, jml2, jml3],
-    answers: [jml1 + jml2, jml1 + jml2 + jml3],
+    jumlah: [angka_1, angka_2, angka_3],
+    answers: [angka_1 + angka_2, angka_1 + angka_2 + angka_3],
     time: null,
   };
 
@@ -589,7 +589,7 @@ async function showStoryQuestion() {
   const p1 = document.createElement("p");
   p1.style.fontSize = "20px";
   p1.style.marginBottom = "8px";
-  p1.textContent = `${namaPilihan[0]} mempunyai ${bendaPilihan} sebanyak ${jml1}, ${namaPilihan[1]} mempunyai ${bendaPilihan} sebanyak ${jml2}, sedangkan ${namaPilihan[2]} mempunyai ${bendaPilihan} sebanyak ${jml3}.`;
+  p1.textContent = `${namaPilihan[0]} mempunyai ${bendaPilihan} sebanyak ${angka_1}, ${namaPilihan[1]} mempunyai ${bendaPilihan} sebanyak ${angka_2}, sedangkan ${namaPilihan[2]} mempunyai ${bendaPilihan} sebanyak ${angka_3}.`;
   slotContainer.appendChild(p1);
 
   showStory1Btn.style.display = "inline-block";
@@ -616,7 +616,7 @@ async function showStoryQuestion() {
     row1.style.display = "flex";
     row1.style.justifyContent = "center";
     row1.style.gap = "8px";
-    const num1Inputs = createDigitInputs(jml1);
+    const num1Inputs = createDigitInputs(angka_1);
     num1Inputs.forEach((i) => row1.appendChild(i));
     inputWrapper.appendChild(row1);
 
@@ -625,7 +625,7 @@ async function showStoryQuestion() {
     row2.style.display = "flex";
     row2.style.justifyContent = "center";
     row2.style.gap = "8px";
-    const num2Inputs = createDigitInputs(jml2);
+    const num2Inputs = createDigitInputs(angka_2);
     num2Inputs.forEach((i) => row2.appendChild(i));
     inputWrapper.appendChild(row2);
 
@@ -656,7 +656,7 @@ async function showStoryQuestion() {
     row3.style.display = "flex";
     row3.style.justifyContent = "center";
     row3.style.gap = "8px";
-    const answerInputs = createDigitInputs(jml1 + jml2);
+    const answerInputs = createDigitInputs(angka_1 + angka_2);
     answerInputs.forEach((i) => row3.appendChild(i));
     inputWrapper.appendChild(row3);
 
@@ -667,13 +667,13 @@ async function showStoryQuestion() {
     // Validasi input (sama seperti sebelumnya)
     function checkAllInputs() {
       const userNum1 = parseInt(num1Inputs.map((i) => i.value).join(""));
-      if (isNaN(userNum1) || userNum1 !== jml1) return false;
+      if (isNaN(userNum1) || userNum1 !== angka_1) return false;
 
       const userNum2 = parseInt(num2Inputs.map((i) => i.value).join(""));
-      if (isNaN(userNum2) || userNum2 !== jml2) return false;
+      if (isNaN(userNum2) || userNum2 !== angka_2) return false;
 
       const userAnswer = parseInt(answerInputs.map((i) => i.value).join(""));
-      if (isNaN(userAnswer) || userAnswer !== jml1 + jml2) return false;
+      if (isNaN(userAnswer) || userAnswer !== angka_1 + angka_2) return false;
 
       return true;
     }
@@ -686,11 +686,11 @@ async function showStoryQuestion() {
       input.addEventListener("input", function () {
         let expectedDigit;
         if (idx < num1Inputs.length) {
-          expectedDigit = splitDigits(jml1)[idx];
+          expectedDigit = splitDigits(angka_1)[idx];
         } else if (idx < num1Inputs.length + num2Inputs.length) {
-          expectedDigit = splitDigits(jml2)[idx - num1Inputs.length];
+          expectedDigit = splitDigits(angka_2)[idx - num1Inputs.length];
         } else {
-          expectedDigit = splitDigits(jml1 + jml2)[
+          expectedDigit = splitDigits(angka_1 + angka_2)[
             idx - num1Inputs.length - num2Inputs.length
           ];
         }
@@ -755,19 +755,19 @@ nextBtn.addEventListener("click", () => {
   questionCount++;
   if (questionCount < 4) {
     // 4 soal penjumlahan
-    showAllRows();
+    showMathQuestions();
   } else if (questionCount < 8) {
     // 4 soal pengurangan
-    showAllRows();
+    showMathQuestions();
   } else if (questionCount === 8) {
     // mulai soal cerita 1
-    showStoryQuestion();
+    showStoryQuestion1();
     questionCount++;
     storyStep = 0;
     nextBtn.style.display = "none"; // sembunyi dulu sampai jawab benar
   } else if (questionCount === 9) {
     // soal cerita 2
-    showStoryQuestion();
+    showStoryQuestion1();
     questionCount++;
     storyStep = 1;
     nextBtn.style.display = "none";
@@ -778,5 +778,5 @@ nextBtn.addEventListener("click", () => {
   }
 });
 
-// showAllRows();
-showStoryQuestion();
+// showMathQuestions();
+showStoryQuestion1();
