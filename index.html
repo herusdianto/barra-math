@@ -86,7 +86,7 @@
       color: #00ffcc;
       text-align: center;
     }
-    
+
     .digit-slot.no-border {
       border: none;
       background: transparent;
@@ -183,7 +183,6 @@
       margin: 0; 
     }
 
-    /* Hilangkan spinner di Firefox */
     input[type=number] {
       -moz-appearance: textfield;
     }
@@ -221,13 +220,22 @@
   const underline = document.getElementById('underline');
   const timerEl = document.getElementById('timer');
   const nextBtn = document.getElementById('next-btn');
+  const symbolEl = document.querySelector('.plus-symbol');
 
   let totalAnswer = 0;
   let answerDigits = [];
   let timerId = null;
 
+  let questionCount = 0;
+  let history = [];
+  let currentQuestionData = null;
+
   function getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function getRandomSubtrahend(min, max, minuend) {
+    return getRandomNumber(min, Math.min(max, minuend));
   }
 
   function splitDigits(num) {
@@ -285,27 +293,38 @@
   }
 
   async function showAllRows() {
-    // Reset UI
     slotContainer.innerHTML = '';
     inputLine.innerHTML = '';
     inputLine.style.display = 'none';
     nextBtn.style.display = 'none';
     timerEl.style.display = 'none';
 
+    const isAddition = questionCount < 4;
+    const operator = isAddition ? '+' : '-';
+    symbolEl.textContent = operator;
+
+    let numbers = [];
     const allDigits = [];
-    let sum = 0;
     let maxLen = 0;
 
     for (let i = 0; i < ROW_COUNT; i++) {
-      const rand = getRandomNumber(MIN, MAX);
-      const digits = splitDigits(rand);
+      let num;
+      if (!isAddition && i === 1) {
+        num = getRandomSubtrahend(MIN, MAX, numbers[0]);
+      } else {
+        num = getRandomNumber(MIN, MAX);
+      }
+      numbers.push(num);
+      const digits = splitDigits(num);
       allDigits.push(digits);
-      sum += rand;
       maxLen = Math.max(maxLen, digits.length);
     }
 
-    totalAnswer = sum;
-    answerDigits = splitDigits(sum);
+    const [a, b] = numbers;
+    const result = isAddition ? a + b : a - b;
+
+    totalAnswer = result;
+    answerDigits = splitDigits(result);
     const totalLen = Math.max(answerDigits.length, maxLen);
 
     for (let digits of allDigits) {
@@ -313,6 +332,8 @@
     }
 
     underline.style.minWidth = `${totalLen * 58}px`;
+
+    currentQuestionData = { a, b, operator, answer: result, time: null };
 
     showInputs(answerDigits, totalLen);
   }
@@ -335,7 +356,6 @@
       input.type = 'number';
       input.min = 0;
       input.max = 9;
-      input.pattern = '[0-9]*';
       input.inputMode = 'numeric';
       inputLine.appendChild(input);
       inputs.push(input);
@@ -354,11 +374,13 @@
           if (allCorrect) {
             stopTimer();
 
-            // Show Next button and focus it
+            const finishTime = timerEl.textContent;
+            currentQuestionData.time = finishTime;
+            history.push(currentQuestionData);
+            localStorage.setItem('mathHistory', JSON.stringify(history));
+
             nextBtn.style.display = 'inline-block';
             nextBtn.focus();
-
-            // Disable semua input agar tidak bisa diubah lagi
             inputs.forEach(input => input.disabled = true);
           } else {
             if (i === lastIndex) {
@@ -367,7 +389,7 @@
               inputs[i + 1].focus();
             }
           }
-        } else if (val.length > 0) {  // jika salah input
+        } else if (val.length > 0) {
           this.style.borderColor = '#f00';
           const input = this;
           setTimeout(() => {
@@ -406,8 +428,14 @@
     }
   }
 
-  // Ketika tombol next ditekan, reset dan mulai ulang soal baru
   nextBtn.addEventListener('click', () => {
+    questionCount++;
+    if (questionCount >= 8) {
+      alert('Selesai! Semua soal telah dijawab.');
+      questionCount = 0;
+      history = [];
+      localStorage.removeItem('mathHistory');
+    }
     showAllRows();
   });
 
