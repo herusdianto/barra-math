@@ -1,0 +1,264 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --digit-height: 70px;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: "Arial", sans-serif;
+  background-color: #121212;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  font-family: "Orbitron", sans-serif;
+  text-align: center;
+  font-size: 32px;
+  padding: 20px 0;
+  color: #00ffcc;
+  border-bottom: 2px solid #00ffcc;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  color: #aaa;
+  border-top: 1px solid #333;
+}
+
+footer a {
+  color: #00ffcc;
+  text-decoration: none;
+}
+
+.line {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.digit-slot {
+  width: 50px;
+  height: 70px;
+  border: 2px solid #444;
+  overflow: hidden;
+  background: #1e1e1e;
+  border-radius: 6px;
+  position: relative;
+}
+
+.digit-inner {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  transition: transform 0.3s ease-in-out;
+}
+
+.digit-number {
+  height: 70px;
+  line-height: 70px;
+  font-size: 40px;
+  font-weight: bold;
+  color: #00ffcc;
+  text-align: center;
+}
+
+.digit-slot.no-border {
+  border: none;
+  background: transparent;
+}
+
+.underline-container {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.underline {
+  height: 4px;
+  background: #00ffcc;
+  flex-grow: 1;
+  min-width: 50px;
+}
+
+.plus-symbol {
+  font-size: 32px;
+  color: #00ffcc;
+}
+
+.input-line {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.input-line input {
+  width: 50px;
+  height: 70px;
+  font-size: 36px;
+  text-align: center;
+  background: #222;
+  border: 2px solid #00ffcc;
+  color: #fff;
+  border-radius: 6px;
+}
+
+.timer {
+  font-size: 18px;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+.btn {
+  display: none;
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: #00ffcc;
+  border: none;
+  border-radius: 6px;
+  color: #121212;
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn:focus {
+  outline: 2px solid #fff;
+}
+
+.history-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px 10px;
+  position: relative;
+}
+
+.timeline-line {
+  position: absolute;
+  top: 0;
+  left: 30px;
+  width: 4px;
+  height: 100%;
+  background: #00ffcc;
+  opacity: 0.3;
+  border-radius: 2px;
+  z-index: 0;
+}
+
+.history-card {
+  position: relative;
+  background: #222;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 255, 204, 0.3);
+  padding: 16px 20px;
+  margin-left: 70px;
+  margin-bottom: 20px;
+  color: #00ffcc;
+  font-size: 18px;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.5s forwards;
+  z-index: 1;
+}
+
+#buttons-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+#restart-btn,
+#clear-history-btn {
+  width: 180px;
+  padding: 12px 0;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: block;
+  margin: 10px auto;
+  user-select: none;
+  box-shadow: 0 0 15px #00ffccaa;
+  transition: background-color 0.3s ease;
+}
+
+#restart-btn {
+  background-color: #00ffcc;
+  color: #121212;
+}
+
+#restart-btn:hover {
+  background-color: #00cca6;
+}
+
+#clear-history-btn {
+  background-color: #cc3300;
+  color: #fff;
+  box-shadow: 0 0 15px #cc3300aa;
+}
+
+#clear-history-btn:hover {
+  background-color: #b22a00;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 500px) {
+  :root {
+    --digit-height: 60px;
+  }
+
+  .digit-slot,
+  .input-line input {
+    width: 40px;
+    height: var(--digit-height);
+  }
+
+  .digit-number {
+    font-size: 34px;
+    height: var(--digit-height);
+    line-height: var(--digit-height);
+  }
+
+  .timer {
+    font-size: 16px;
+  }
+
+  .btn {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
